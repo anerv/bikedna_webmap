@@ -1,5 +1,4 @@
 # %%
-# move simplified edges, extrinsic_grid, matched segments, unmatched segments (??), largest connected components, component edges
 
 import os
 import yaml
