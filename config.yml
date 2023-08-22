@@ -6,4 +6,4 @@ db_port: '5432'
 db_host: 'localhost'
 db_password: 'aneitu'
 
-study_area: 'DK'
+study_area: 'dk'
