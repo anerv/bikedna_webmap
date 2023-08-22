@@ -1,0 +1,5 @@
+todo.md
+*.ds_store
+
+data/*
+results/*
