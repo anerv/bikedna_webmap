@@ -3,3 +3,4 @@ todo.md
 
 data/*
 results/*
+src/__pycache__/*
