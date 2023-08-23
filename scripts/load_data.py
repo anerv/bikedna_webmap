@@ -173,10 +173,3 @@ print(test)
 connection.close()
 
 # %%
-# with open('../data/reference_data.pickle', 'wb') as handle:
-#     pickle.dump(graph_ref, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-# with open('../data/reference_data_simple.pickle', 'wb') as handle:
-#     pickle.dump(G_sim, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-# %%
