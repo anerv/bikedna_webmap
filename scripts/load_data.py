@@ -1,11 +1,9 @@
-# %%
-
 import geopandas as gpd
 import yaml
 import pickle
 from src import db_functions as dbf
 
-# %%
+
 with open(r"../config.yml") as file:
     parsed_yaml_file = yaml.load(file, Loader=yaml.FullLoader)
 
@@ -20,7 +18,7 @@ with open(r"../config.yml") as file:
     db_port = parsed_yaml_file["db_port"]
 
 print("Settings loaded!")
-# %%
+
 # filepaths
 osm_data_fp = f"../data/osm/{study_area}/processed/"
 osm_results_fp = f"../results/osm/{study_area}/data/"
@@ -30,8 +28,9 @@ geodk_results_fp = f"../results/reference/{study_area}/data/"
 
 compare_results_fp = f"../results/compare/{study_area}/data/"
 
-# %%
+
 # read data
+
 osm_simplified_edges = gpd.read_parquet(osm_data_fp + "osm_edges_simplified.parquet")
 
 geodk_simplified_edges = gpd.read_parquet(
@@ -74,18 +73,14 @@ geodk_unmatched = gpd.read_parquet(
     + f"ref_unmatched_segments_{buffer_dist}_{hausdorff_dist}_{angle}.parquet"
 )
 
-# %%
 with open(compare_results_fp + "grid_results_extrinsic.pickle", "rb") as fp:
     extrinsic_grid = pickle.load(fp)
 
 with open(osm_results_fp + "grid_results_intrinsic.pickle", "rb") as fp:
     osm_intrinsic_grid = pickle.load(fp)
 
-# %%
-# TODO: join edges with comp and largest cc (or make sure largest cc is 0/1)
-# %%
 
-# TODO: subset all data
+# join edge data
 
 ref_cols = [
     "edge_id",
@@ -94,10 +89,10 @@ ref_cols = [
     "protected",
     "from",
     "to",
+    "component",
     "geometry",
 ]
 
-# %%
 osm_cols = [
     "edge_id",
     "length",
@@ -106,70 +101,80 @@ osm_cols = [
     "bicycle_infrastructure",
     "bicycle_bidirectional",
     "bicycle_geometries",
+    "component",
     "geometry",
 ]
 
 
-# %%
+osm_joined_edges = osm_simplified_edges.merge(
+    osm_component_edges[["edge_id", "component"]], on="edge_id"
+)
+
+assert len(osm_joined_edges) == len(osm_simplified_edges)
+
+osm_joined_edges = osm_joined_edges[osm_cols]
+
+osm_joined_edges["largest_cc"] = False
+
+osm_joined_edges.loc[osm_joined_edges.component == 0, "largest_cc"] = True
+
+assert len(osm_joined_edges[osm_joined_edges.largest_cc == True]) == len(osm_largest_cc)
 
 
-geodk = gpd.read_file(geodk_fp)
+geodk_joined_edges = geodk_simplified_edges.merge(
+    geodk_component_edges[["edge_id", "component"]], on="edge_id"
+)
 
-geodk.columns = geodk.columns.str.lower()
+assert len(geodk_joined_edges) == len(geodk_simplified_edges)
 
-useful_cols = [
-    "fot_id",
-    "mob_id",
-    "feat_kode",
-    "feat_type",
-    "featstatus",
-    "geomstatus",
-    "startknude",
-    "slutknude",
-    "niveau",
-    "overflade",
-    "rund_koer",
-    "kom_kode",
-    "vejkode",
-    "tilfra_koe",
-    "trafikart",
-    "vejklasse",
-    "vej_mynd",
-    "vej_type",
-    "geometry",
+geodk_joined_edges = geodk_joined_edges[ref_cols]
+
+geodk_joined_edges["largest_cc"] = False
+
+geodk_joined_edges.loc[geodk_joined_edges.component == 25, "largest_cc"] = True
+
+assert len(geodk_joined_edges[geodk_joined_edges.largest_cc == True]) == len(
+    geodk_largest_cc
+)
+
+
+data = [
+    osm_joined_edges,
+    geodk_joined_edges,
+    osm_matched,
+    osm_unmatched,
+    geodk_matched,
+    geodk_unmatched,
+    extrinsic_grid,
+    osm_intrinsic_grid,
+]
+table_names = [
+    "osm_edges",
+    "geodk_edges",
+    "osm_matched",
+    "osm_unmatched",
+    "geodk_matched",
+    "geodk_unmatched",
+    "extrinsic_grid",
+    "osm_intrinsic_grid",
 ]
 
-geodk = geodk[useful_cols]
-
-geodk = geodk.to_crs(crs)
-
-assert geodk.crs == crs
-
-assert len(geodk) == len(geodk[geodk_id_col].unique())
-
-# %%
-# Get cycling infrastructure
-geodk_bike = geodk.loc[
-    geodk.vejklasse.isin(["Cykelsti langs vej", "Cykelbane langs vej"])
-].copy()
-
-# Create unique edge id column
-geodk_bike["edge_id"] = geodk_bike.fot_id
-
-assert len(geodk_bike.edge_id) == len(geodk_bike)
-# %%
 connection = dbf.connect_pg(db_name, db_user, db_password)
 
 engine = dbf.connect_alc(db_name, db_user, db_password, db_port=db_port)
 
-dbf.to_postgis(geodataframe=geodk_bike, table_name="geodk_bike", engine=engine)
+for name, dataset in zip(table_names, data):
+    dbf.to_postgis(geodataframe=dataset, table_name=name, engine=engine)
 
-q = "SELECT edge_id, vejklasse FROM geodk_bike LIMIT 10;"
+q1 = "SELECT edge_id, infrastructure_length, component FROM osm_edges LIMIT 10;"
+q2 = "SELECT edge_id, infrastructure_length, component FROM geodk_edges LIMIT 10;"
 
-test = dbf.run_query_pg(q, connection)
+test1 = dbf.run_query_pg(q1, connection)
 
-print(test)
+print(test1)
+
+test2 = dbf.run_query_pg(q2, connection)
+
+print(test2)
 
 connection.close()
-
-# %%
