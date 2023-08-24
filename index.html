@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bicycle Infrastructure in Denmark</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- load leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+
+    <!-- load VectorGrid extension -->
+    <script src="https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js"></script>
+
+    <!-- load locate plugin -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.js"
+        charset="utf-8"></script>
+
+    <!-- legend styles -->
+    <style type='text/css'>
+        /* Import ET Book styles
+        adapted from https://github.com/edwardtufte/et-book/blob/gh-pages/et-book.css */
+
+        /* @font-face {
+            font-family: "et-book";
+            src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot");
+            src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf") format("truetype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.svg#etbookromanosf") format("svg");
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "et-book";
+            src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot");
+            src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf") format("truetype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.svg#etbookromanosf") format("svg");
+            font-weight: normal;
+            font-style: italic;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "et-book";
+            src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot");
+            src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf") format("truetype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.svg#etbookromanosf") format("svg");
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        } */
+
+        body {
+            font-family: sans-serif;
+        }
+
+        .maplegend {
+            position: absolute;
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, .8);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            font-size: 12px/14px;
+            right: 10px;
+            bottom: 20px;
+            display: none;
+            font-family: 'et-book', serif;
+        }
+
+        .maplegend .legend-title {
+            text-align: left;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #3B6E8D;
+            font-size: larger;
+        }
+
+        .maplegend .legend-scale ul {
+            margin: 0;
+            margin-bottom: 0px;
+            padding: 0;
+            float: left;
+            list-style: none;
+        }
+
+        .maplegend .legend-scale ul li {
+            list-style: none;
+            margin-left: 0;
+            line-height: 16px;
+            margin-bottom: 6px;
+        }
+
+        .maplegend ul.legend-labels li span {
+            display: block;
+            float: left;
+            height: 14px;
+            width: 14px;
+            margin-right: 5px;
+            margin-left: 0;
+            border: 0px solid #ccc;
+        }
+
+        .maplegend .legend-source {
+            color: #777;
+            clear: both;
+        }
+
+        .maplegend a {
+            color: #777;
+        }
+
+        #maptitle {
+            position: absolute;
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, .8);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-left: 20px;
+            font-size: 12px;
+            top: 10px;
+            right: 100px;
+            max-width: 480px;
+            height: 50%;
+            display: none;
+        }
+
+        div.overflow {
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-family: 'et-book', serif;
+            color: #3B6E8D;
+        }
+
+        h2 {
+            font-size: 25px;
+            font-family: 'et-book', serif;
+            color: #3B6E8D;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-family: 'et-book', serif;
+            color: #BD5B4F;
+        }
+
+        div.logos {
+            height: 100px;
+            margin-top: 30px;
+            padding: 0 30px 0 30px;
+        }
+
+        div.logos img {
+            vertical-align: middle;
+        }
+
+        div.logos a {
+            height: 100%;
+        }
+
+        button.toggle-title {
+            position: absolute;
+            z-index: 99999;
+            background-color: rgba(255, 255, 255, .8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            border: 0;
+            padding: 5px;
+            font-size: 16px;
+            right: 160px;
+            top: 10px;
+        }
+
+        /* button.toggle-legend {
+            position: absolute;
+            z-index: 99999;
+            background-color: rgba(255, 255, 255, .8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            border: 0;
+            padding: 5px;
+            font-size: 12px;
+            right: 10px;
+            bottom: 20px;
+        } */
+
+        @media only screen and (min-width: 1920px) {
+
+            button.toggle-title
+            /* button.toggle-legend  */
+            {
+                padding: 10px;
+                font-size: 18px;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleTitle() {
+            var x = document.getElementById("maptitle");
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        };
+
+        // function toggleLegend() {
+        //     var x = document.getElementById("maplegend");
+        //     if (x.style.display === "block") {
+        //         x.style.display = "none";
+        //     } else {
+        //         x.style.display = "block";
+        //     }
+        // }
+    </script>
+
+</head>
+
+<body style='margin:0'>
+    <button onclick="toggleTitle()" class="toggle-title">Details</button>
+    <div id="maptitle">
+        <div class="overflow">
+            <h1>Bicycle Infrastructure in Denmark
+            </h1>
+            ADD EXPLANATION HERE
+            
+            <!-- <div class="logos">
+                <a href="https://www.liverpool.ac.uk/geographic-data-science/"><img
+                        src="https://urbangrammarai.xyz/_static/gdsl.png" alt="GDSL" width="28%"
+                        style="margin-right: 4%"></a>
+                <a href="https://www.liverpool.ac.uk"><img src="https://urbangrammarai.xyz/_static/liv_logo.png"
+                        alt="University of Liverpool" width="28%" style="margin-right: 4%"></a>
+                <a href="https://www.turing.ac.uk/"><img src="https://urbangrammarai.xyz/_static/ati_logo.png" alt="ATI"
+                        width="30%"></a>
+            </div> -->
+
+        
+
+        </div>
+    </div>
+
+    <!-- div containing map -->
+    <div id="map" style="width: 100vw; height: 100vh; background: #fdfdfd"></div>
+
+    <!-- specification of leaflet map -->
+    <script>
+        // defaults
+        const minZoom = 6;
+        const maxZoom = 15;
+
+        // get parameters from URL to allow custom location and zoom start
+        var params = {};
+        window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            params[key] = value;
+        });
+
+        // create map
+        var map = L.map('map', {
+            center: [params.lat || 55.843742, params.lng || 10.579834],
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            zoomControl: true,
+            zoom: params.zoom || 8,
+            tap: false,
+        });
+
+        // Standard OSM basemap
+        var osm = L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+            {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+        ) //.addTo(map);
+
+        var cyclosm = L.tileLayer(
+            "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
+            {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+        ) //.addTo(map);
+
+        var positron = L.tileLayer(
+            "https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", 
+            {attribution: '&copy; CartoDB &copy OpenStreetMap'}
+        ).addTo(map);
+
+        // TODO: add satelite base map and SDFI basemaps
+        // https://leafletjs.com/examples/wms/wms.html
+        // var wmsLayer = L.tileLayer.wms('http://ows.mundialis.de/services/service?', wmsOptions).addTo(map);
+
+
+
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "Cyclosm": cyclosm,
+            "positron": positron
+        };
+
+        // TODO: ADD LEGEND TOGGLE BASEMAPS
+
+        var layerControl = L.control.layers(baseMaps).addTo(map);
+
+        // get vector tiles URL
+        var mapUrl = "tiles/{z}/{x}/{y}.pbf";
+        
+        // TODO
+        // mapping fof colors to signature types
+        // const cmap = {
+        //     "0_0": "#f2e6c7",
+        //     "1_0": "#8fa37e",
+        //     "3_0": "#d7a59f",
+        //     "4_0": "#d7ded1",
+        //     "5_0": "#c3abaf",
+        //     "6_0": "#e4cbc8",
+        //     "7_0": "#c2d0d9",
+        //     "8_0": "#f0d17d",
+        //     "2_0": "#678ea6",
+        //     "2_1": "#94666e",
+        //     "2_2": "#efc758",
+        //     "9_0": "#3b6e8c",
+        //     "9_1": "#333432",
+        //     "9_2": "#ab888e",
+        //     "9_3": "#c1c1c0",
+        //     "9_4": "#bc5b4f",
+        //     "9_5": "#a7b799",
+        //     "9_6": "#c1c1c0",
+        //     "9_7": "#c1c1c0",
+        //     "9_8": "#c1c1c0"
+        // };
+
+        // TODO: mapping of names to signature types to be shown in popup on click
+        // const popup_info = {
+        //     "0_0": "<strong>Signature type</strong><br>Countryside agriculture",
+        //     "1_0": "<strong>Signature type</strong><br>Accessible suburbia",
+        //     "3_0": "<strong>Signature type</strong><br>Open sprawl",
+        //     "4_0": "<strong>Signature type</strong><br>Wild countryside",
+        //     "5_0": "<strong>Signature type</strong><br>Warehouse/Park land",
+        //     "6_0": "<strong>Signature type</strong><br>Gridded residential quarters",
+        //     "7_0": "<strong>Signature type</strong><br>Urban buffer",
+        //     "8_0": "<strong>Signature type</strong><br>Disconnected suburbia",
+        //     "2_0": "<strong>Signature type</strong><br>Dense residential neighbourhoods",
+        //     "2_1": "<strong>Signature type</strong><br>Connected residential neighbourhoods",
+        //     "2_2": "<strong>Signature type</strong><br>Dense urban neighbourhoods",
+        //     "9_0": "<strong>Signature type</strong><br>Local urbanity",
+        //     "9_1": "<strong>Signature type</strong><br>Concentrated urbanity",
+        //     "9_2": "<strong>Signature type</strong><br>Regional urbanity",
+        //     "9_4": "<strong>Signature type</strong><br>Metropolitan urbanity",
+        //     "9_5": "<strong>Signature type</strong><br>Hyper concentrated urbanity",
+        // };
+
+        // define styling of vector tiles
+        // var vectorTileStyling = {
+        //     signatures_combined_levels_clipped_4326: function (properties, zoom) {
+        //         var weight = 0;
+        //         if (zoom > 12) {
+        //             weight = 1.0;
+        //         }
+        //         return ({
+        //             fill: true,
+        //             weight: weight,
+        //             color: "#ffffff",
+        //             fillColor: cmap[properties.signature_type],
+        //             fillOpacity: 0.9,
+        //             opacity: 1.0,
+        //         });
+        //     }
+        // }
+
+        // define options of vector tiles
+        // var mapVectorTileOptions = {
+        //     rendererFactory: L.canvas.tile,
+        //     interactive: true, // UPDATE TODO
+        //     attribution: '&copy; <a href="https://martinfleischmann.net">Martin Fleischmann</a>, <a href="https://darribas.org">Dani Arribas-Bel</a>, <a href="https://urbangrammarai.xyz">Urban Grammar AI research project</a>',
+        //     maxNativeZoom: maxZoom,
+        //     minZoom: minZoom,
+        //     vectorTileLayerStyles: vectorTileStyling,
+        // };
+
+        // // create VectorGrid layer and add popup to it
+        // var mapPbfLayer = new L.VectorGrid.Protobuf(
+        //     mapUrl, mapVectorTileOptions
+        // ).on('click', function (e) {
+        //     L.popup()
+        //         .setContent(popup_info[e.layer.properties.signature_type]) // TODO
+        //         .setLatLng(e.latlng)
+        //         .openOn(map);
+        // });
+
+        // // add VectorGrid layer to map
+        // mapPbfLayer.addTo(map);
+
+        // // add transparent  road basemap on top // TODO - add basemap layer
+        // var roads = L.tileLayer(
+        //     'https://api.mapbox.com/styles/v1/martinfleis/ckl6jkuwe3uxa17mrhnp78e62/tiles/256/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoibWFydGluZmxlaXMiLCJhIjoiY2tydnN4ems4MDl3cDJvcnhjZmZyMng1OSJ9.keLNOQHto3pzzJB1py9BVg', {
+        //     attribution: '',
+        //     opacity: 0.3
+        // }
+        // ).addTo(map);
+
+
+        // add scalebar
+        L.control.scale().addTo(map);
+
+        // add locate
+        L.control.locate().addTo(map);
+    </script>
+
+    <!-- legend TODO -->
+    <!-- <button onclick="toggleLegend()" class="toggle-legend">Legend</button>
+    <div id='maplegend' class='maplegend'>
+        <div class='legend-title'>Content</div>
+        <div class='legend-scale'>
+            <ul class='legend-labels'>
+                <li><span style='background:#d7ded1'></span>Wild countryside</li>
+                <li><span style='background:#f2e6c7'></span>Countryside agriculture</li>
+                <li><span style='background:#c2d0d9'></span>Urban buffer</li>
+                <li><span style='background:#d7a59f'></span>Open sprawl</li>
+                <li><span style='background:#f0d17d'></span>Disconnected suburbia</li>
+                <li><span style='background:#8fa37e'></span>Accessible suburbia</li>
+                <li><span style='background:#c3abaf'></span>Warehouse/Park land</li>
+                <li><span style='background:#e4cbc8'></span>Gridded residential quarters</li>
+                <li><span style='background:#94666e'></span>Connected residential neighbourhoods</li>
+                <li><span style='background:#678ea6'></span>Dense residential neighbourhoods</li>
+                <li><span style='background:#efc758'></span>Dense urban neighbourhoods</li>
+                <li><span style='background:#3b6e8c'></span>Local urbanity</li>
+                <li><span style='background:#ab888e'></span>Regional urbanity</li>
+                <li><span style='background:#bc5b4f'></span>Metropolitan urbanity</li>
+                <li><span style='background:#333432'></span>Concentrated urbanity</li>
+                <li><span style='background:#a7b799'></span>Hyper concentrated urbanity</li>
+            </ul>
+        </div>
+    </div> -->
+
+</body>
+
+</html>
