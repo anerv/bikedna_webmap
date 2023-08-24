@@ -1,3 +1,4 @@
+# %%
 import geopandas as gpd
 import yaml
 import pickle
@@ -159,10 +160,13 @@ table_names = [
     "osm_intrinsic_grid",
 ]
 
+print("Data ready!")
+# %%
 connection = dbf.connect_pg(db_name, db_user, db_password)
 
 engine = dbf.connect_alc(db_name, db_user, db_password, db_port=db_port)
 
+# %%
 for name, dataset in zip(table_names, data):
     dbf.to_postgis(geodataframe=dataset, table_name=name, engine=engine)
 
@@ -178,3 +182,5 @@ test2 = dbf.run_query_pg(q2, connection)
 print(test2)
 
 connection.close()
+
+# %%

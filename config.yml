@@ -1,6 +1,6 @@
 CRS: 'EPSG:25832'
 
-db_name: 'bikedna_webmaps'
+db_name: 'bikedna_maps'
 db_user: 'postgres'
 db_port: '5432'
 db_host: 'localhost'
