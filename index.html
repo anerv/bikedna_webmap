@@ -257,7 +257,7 @@
     <script>
         // defaults
         const minZoom = 6;
-        const maxZoom = 15;
+        const maxZoom = 17;
 
         // get parameters from URL to allow custom location and zoom start
         var params = {};
@@ -279,37 +279,63 @@
         var osm = L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
             {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
-        ) //.addTo(map);
+        ); //.addTo(map);
 
+        // Cycleosm basemap
         var cyclosm = L.tileLayer(
             "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
             {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
-        ) //.addTo(map);
+        ); //.addTo(map);
 
+        // Positron 
         var positron = L.tileLayer(
-            "https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png", 
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", 
             {attribution: '&copy; CartoDB &copy OpenStreetMap'}
         ).addTo(map);
 
-        // TODO: add satelite base map and SDFI basemaps
-        // https://leafletjs.com/examples/wms/wms.html
-        // var wmsLayer = L.tileLayer.wms('http://ows.mundialis.de/services/service?', wmsOptions).addTo(map);
-
+        // Google satellite
+        googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{attribution: '&copy; Google', 
+            maxZoom: maxZoom,
+            subdomains:['mt0','mt1','mt2','mt3'],
+            opacity: 0.5,
+        });
 
 
         var baseMaps = {
             "OpenStreetMap": osm,
             "Cyclosm": cyclosm,
-            "positron": positron
+            "Positron": positron,
+            "Satellite": googleSat,
+
         };
 
-        // TODO: ADD LEGEND TOGGLE BASEMAPS
-
-        var layerControl = L.control.layers(baseMaps).addTo(map);
 
         // get vector tiles URL
-        var mapUrl = "tiles/{z}/{x}/{y}.pbf";
+        var mapUrl = "data/geojson/tiles/{z}/{x}/{y}.pbf";
         
+        // define options of vector tiles
+        var mapVectorTileOptions = {
+            rendererFactory: L.canvas.tile,
+            interactive: true,
+            attribution: '(C) GeoDanmark &copy OpenStreetMap',
+            maxNativeZoom: maxZoom,
+            minZoom: minZoom,
+        };
+
+        var infraLayer = new L.VectorGrid.Protobuf(
+            mapUrl, mapVectorTileOptions
+        ).addTo(map);
+
+        infraLayer.bringToFront();
+
+
+        var tileMaps = {
+            "Bicycle infrastructure": infraLayer,
+        };
+
+        var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
+
+
         // TODO
         // mapping fof colors to signature types
         // const cmap = {
