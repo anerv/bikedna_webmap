@@ -160,13 +160,18 @@ table_names = [
     "osm_intrinsic_grid",
 ]
 
+osm_intrinsic_grid["component_ids_osm"] = osm_intrinsic_grid.component_ids_osm.astype(
+    str
+)
+
 print("Data ready!")
 # %%
+# TO POSTGRES
+
 connection = dbf.connect_pg(db_name, db_user, db_password)
 
 engine = dbf.connect_alc(db_name, db_user, db_password, db_port=db_port)
 
-# %%
 for name, dataset in zip(table_names, data):
     dbf.to_postgis(geodataframe=dataset, table_name=name, engine=engine)
 
@@ -182,5 +187,10 @@ test2 = dbf.run_query_pg(q2, connection)
 print(test2)
 
 connection.close()
+
+# %%
+# TO FILE
+for name, dataset in zip(table_names, data):
+    dataset.to_file("../data/gpkg/" + name + ".gpkg")
 
 # %%
