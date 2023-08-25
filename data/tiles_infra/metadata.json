@@ -1,0 +1,16 @@
+{
+"name": "../data/tiles_infra/",
+"description": "../data/tiles_infra/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "17",
+"center": "12.168732,55.786613,17",
+"bounds": "8.084347,54.573739,15.150494,57.738626",
+"antimeridian_adjusted_bounds": "8.084347,54.573739,15.150494,57.738626",
+"type": "overlay",
+"strategies": "[{},{},{},{\"dropped_as_needed\":20664,\"tile_size_desired\":582309},{\"dropped_as_needed\":66836,\"tile_size_desired\":669621},{\"dropped_as_needed\":5579,\"tile_size_desired\":507472},{\"dropped_as_needed\":52297,\"tile_size_desired\":649750},{\"dropped_as_needed\":67581,\"tile_size_desired\":728819},{\"dropped_as_needed\":54635,\"tile_size_desired\":675037},{\"dropped_as_needed\":24550,\"tile_size_desired\":554060},{},{},{},{},{},{},{},{}]",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z17 --no-tile-compression --drop-densest-as-needed '--output-to-directory=../data/tiles_infra/' ../data/geojson/infra.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"infra\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":17,\"fields\":{\"bicycle_bidirectional\":\"String\",\"protected\":\"String\",\"source\":\"String\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"infra\",\"count\":139853,\"geometry\":\"LineString\",\"attributeCount\":3,\"attributes\":[{\"attribute\":\"bicycle_bidirectional\",\"count\":2,\"type\":\"string\",\"values\":[\"0\",\"1\"]},{\"attribute\":\"protected\",\"count\":3,\"type\":\"string\",\"values\":[\"mixed\",\"protected\",\"unprotected\"]},{\"attribute\":\"source\",\"count\":2,\"type\":\"string\",\"values\":[\"geodk\",\"osm\"]}]}]}}"
+}
