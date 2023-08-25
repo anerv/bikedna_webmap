@@ -309,10 +309,6 @@
 
         };
 
-
-        // get vector tiles URL
-        var mapUrl = "data/geojson/tiles/{z}/{x}/{y}.pbf";
-        
         // define options of vector tiles
         var mapVectorTileOptions = {
             rendererFactory: L.canvas.tile,
@@ -322,15 +318,47 @@
             minZoom: minZoom,
         };
 
+        // vector tiles URL
+        var tilesInfra = "data/tiles_infra/{z}/{x}/{y}.pbf";
+        var tilesComponents = "data/tiles_components/{z}/{x}/{y}.pbf";
+        var tilesMatched = "data/tiles_matched/{z}/{x}/{y}.pbf";
+        var tilesLargestCC = "data/tiles_largest_cc/{z}/{x}/{y}.pbf";
+        var tilesInfraDens = "data/tiles_infra_dens/{z}/{x}/{y}.pbf";
+
         var infraLayer = new L.VectorGrid.Protobuf(
-            mapUrl, mapVectorTileOptions
+            tilesInfra, mapVectorTileOptions
         ).addTo(map);
 
-        infraLayer.bringToFront();
+        var compLayer = new L.VectorGrid.Protobuf(
+            tilesComponents, mapVectorTileOptions
+        );
 
+        var matchedLayer = new L.VectorGrid.Protobuf(
+            tilesMatched, mapVectorTileOptions
+        );
+
+        var largestCCLayer = new L.VectorGrid.Protobuf(
+            tilesLargestCC, mapVectorTileOptions
+        );
+
+        var infraDensLayer = new L.VectorGrid.Protobuf(
+            tilesInfraDens, mapVectorTileOptions
+        );
+
+
+        infraLayer.bringToFront();
+        compLayer.bringToFront();
+        matchedLayer.bringToFront();
+        largestCCLayer.bringToFront();
+        infraDensLayer.bringToFront();
 
         var tileMaps = {
             "Bicycle infrastructure": infraLayer,
+            "Corresponding infrastructure": matchedLayer,
+            "Disconnected components": compLayer,
+            "Largest connected components": largestCCLayer,
+            "Infrastructure density difference": infraDensLayer
+
         };
 
         var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
