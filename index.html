@@ -197,8 +197,9 @@
         @media only screen and (min-width: 1920px) {
 
             button.toggle-title
+
             /* button.toggle-legend  */
-            {
+                {
                 padding: 10px;
                 font-size: 18px;
             }
@@ -234,7 +235,7 @@
             <h1>Bicycle Infrastructure in Denmark
             </h1>
             ADD EXPLANATION HERE
-            
+
             <!-- <div class="logos">
                 <a href="https://www.liverpool.ac.uk/geographic-data-science/"><img
                         src="https://urbangrammarai.xyz/_static/gdsl.png" alt="GDSL" width="28%"
@@ -245,7 +246,7 @@
                         width="30%"></a>
             </div> -->
 
-        
+
 
         </div>
     </div>
@@ -277,26 +278,27 @@
 
         // Standard OSM basemap
         var osm = L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
-            {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }
         ); //.addTo(map);
 
         // Cycleosm basemap
         var cyclosm = L.tileLayer(
-            "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png", 
-            {attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+            "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+            { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }
         ); //.addTo(map);
 
         // Positron 
         var positron = L.tileLayer(
-            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", 
-            {attribution: '&copy; CartoDB &copy OpenStreetMap'}
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            { attribution: '&copy; CartoDB &copy OpenStreetMap' }
         ).addTo(map);
 
         // Google satellite
-        googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{attribution: '&copy; Google', 
+        googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google',
             maxZoom: maxZoom,
-            subdomains:['mt0','mt1','mt2','mt3'],
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
             opacity: 0.5,
         });
 
@@ -309,6 +311,112 @@
 
         };
 
+        // pop up values 
+        const popup_info = {
+            "osm": "OpenStreetMap",
+            "geodk": "GeoDanmark",
+            "false": "Not matched",
+            "true": "Matched"
+        };
+
+        const cmap = {
+            "osm": "#796eb2",
+            "geodk": "#f87d2a",
+            "true": "#FF0000",
+            "false": "#3944BC"
+        };
+
+        function matchedColor(m, s) {
+            if ((m === true) && (s === "osm")) return "#FF5733";
+            if ((m === false) && (s === "osm")) return "#6D7BC9";
+            if ((m === true) && (s === "geodk")) return "#C70039";
+            if ((m === false) && (s === "geodk")) return "#1D32A9";
+            return "grey";
+        };
+
+        function get_component_count(properties,) {
+            var componentCount;
+
+            for (let i = 0; i < properties.length; i++) {
+
+            }
+        };
+
+
+        function getMax(arr, prop) {
+            var max;
+            for (var i = 0; i < arr.length; i++) {
+                if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
+                    max = arr[i];
+            }
+            return max;
+        };
+
+        function component_cmap(comp_count) {
+
+            const dict = [];
+
+            for (let i = 0; i < comp_count + 1; i++) {
+                const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                dict.push({
+                    key: i,
+                    value: randomColor
+                });
+
+            }
+
+        };
+
+
+        // styling
+        var vectorTileStyling = {
+            infra: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            matched: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: matchedColor(properties.matched, properties.source), //cmap[properties.matched],
+                    opacity: 1.0,
+                });
+            },
+            largest_cc: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            // infra_dens: function (properties) {
+            //     return ({
+            //         fill: true,
+            //         fillColor: density_cmap[properties.edge_density_diff],
+            //         fillOpacity: 0.9,
+            //         weight: 1.5,
+            //         color: "#ffffff",
+            //         opacity: 1.0,
+            //     });
+            // },
+            osm_components: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: "orange",
+                    opacity: 1.0,
+                });
+            },
+            geodk_components: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: "pink",
+                    opacity: 1.0,
+                });
+            }
+        }
+
         // define options of vector tiles
         var mapVectorTileOptions = {
             rendererFactory: L.canvas.tile,
@@ -316,147 +424,80 @@
             attribution: '(C) GeoDanmark &copy OpenStreetMap',
             maxNativeZoom: maxZoom,
             minZoom: minZoom,
+            vectorTileLayerStyles: vectorTileStyling
         };
 
         // vector tiles URL
-        var tilesInfra = "data/tiles_infra/{z}/{x}/{y}.pbf";
-        var tilesComponents = "data/tiles_components/{z}/{x}/{y}.pbf";
-        var tilesMatched = "data/tiles_matched/{z}/{x}/{y}.pbf";
-        var tilesLargestCC = "data/tiles_largest_cc/{z}/{x}/{y}.pbf";
-        var tilesInfraDens = "data/tiles_infra_dens/{z}/{x}/{y}.pbf";
+        var tilesInfra = "data/tiles/tiles_infra/{z}/{x}/{y}.pbf";
+        var tilesOSMComponents = "data/tiles/tiles_osm_components/{z}/{x}/{y}.pbf";
+        var tilesGeodkComponents = "data/tiles/tiles_geodk_components/{z}/{x}/{y}.pbf";
+        var tilesMatched = "data/tiles/tiles_matched/{z}/{x}/{y}.pbf";
+        var tilesLargestCC = "data/tiles/tiles_largest_cc/{z}/{x}/{y}.pbf";
+        //var tilesInfraDens = "data/tiles_infra_dens/{z}/{x}/{y}.pbf";
 
         var infraLayer = new L.VectorGrid.Protobuf(
             tilesInfra, mapVectorTileOptions
-        ).addTo(map);
+        ).on('click', function (e) {
+            L.popup()
+                .setContent(popup_info[e.layer.properties.source] + ", " + e.layer.properties.protected)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
 
-        var compLayer = new L.VectorGrid.Protobuf(
-            tilesComponents, mapVectorTileOptions
-        );
+        infraLayer.addTo(map);
 
         var matchedLayer = new L.VectorGrid.Protobuf(
             tilesMatched, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent(popup_info[e.layer.properties.source] + ": " + popup_info[e.layer.properties.matched])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var osmCompLayer = new L.VectorGrid.Protobuf(
+            tilesOSMComponents, mapVectorTileOptions
         );
+
+        var geodkCompLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkComponents, mapVectorTileOptions
+        );
+
 
         var largestCCLayer = new L.VectorGrid.Protobuf(
             tilesLargestCC, mapVectorTileOptions
-        );
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Largest connected component in " + popup_info[e.layer.properties.source])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
 
-        var infraDensLayer = new L.VectorGrid.Protobuf(
-            tilesInfraDens, mapVectorTileOptions
-        );
-
-
-        infraLayer.bringToFront();
-        compLayer.bringToFront();
-        matchedLayer.bringToFront();
-        largestCCLayer.bringToFront();
-        infraDensLayer.bringToFront();
-
-        var tileMaps = {
-            "Bicycle infrastructure": infraLayer,
-            "Corresponding infrastructure": matchedLayer,
-            "Disconnected components": compLayer,
-            "Largest connected components": largestCCLayer,
-            "Infrastructure density difference": infraDensLayer
-
-        };
-
-        var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
-
-
-        // TODO
-        // mapping fof colors to signature types
-        // const cmap = {
-        //     "0_0": "#f2e6c7",
-        //     "1_0": "#8fa37e",
-        //     "3_0": "#d7a59f",
-        //     "4_0": "#d7ded1",
-        //     "5_0": "#c3abaf",
-        //     "6_0": "#e4cbc8",
-        //     "7_0": "#c2d0d9",
-        //     "8_0": "#f0d17d",
-        //     "2_0": "#678ea6",
-        //     "2_1": "#94666e",
-        //     "2_2": "#efc758",
-        //     "9_0": "#3b6e8c",
-        //     "9_1": "#333432",
-        //     "9_2": "#ab888e",
-        //     "9_3": "#c1c1c0",
-        //     "9_4": "#bc5b4f",
-        //     "9_5": "#a7b799",
-        //     "9_6": "#c1c1c0",
-        //     "9_7": "#c1c1c0",
-        //     "9_8": "#c1c1c0"
-        // };
-
-        // TODO: mapping of names to signature types to be shown in popup on click
-        // const popup_info = {
-        //     "0_0": "<strong>Signature type</strong><br>Countryside agriculture",
-        //     "1_0": "<strong>Signature type</strong><br>Accessible suburbia",
-        //     "3_0": "<strong>Signature type</strong><br>Open sprawl",
-        //     "4_0": "<strong>Signature type</strong><br>Wild countryside",
-        //     "5_0": "<strong>Signature type</strong><br>Warehouse/Park land",
-        //     "6_0": "<strong>Signature type</strong><br>Gridded residential quarters",
-        //     "7_0": "<strong>Signature type</strong><br>Urban buffer",
-        //     "8_0": "<strong>Signature type</strong><br>Disconnected suburbia",
-        //     "2_0": "<strong>Signature type</strong><br>Dense residential neighbourhoods",
-        //     "2_1": "<strong>Signature type</strong><br>Connected residential neighbourhoods",
-        //     "2_2": "<strong>Signature type</strong><br>Dense urban neighbourhoods",
-        //     "9_0": "<strong>Signature type</strong><br>Local urbanity",
-        //     "9_1": "<strong>Signature type</strong><br>Concentrated urbanity",
-        //     "9_2": "<strong>Signature type</strong><br>Regional urbanity",
-        //     "9_4": "<strong>Signature type</strong><br>Metropolitan urbanity",
-        //     "9_5": "<strong>Signature type</strong><br>Hyper concentrated urbanity",
-        // };
-
-        // define styling of vector tiles
-        // var vectorTileStyling = {
-        //     signatures_combined_levels_clipped_4326: function (properties, zoom) {
-        //         var weight = 0;
-        //         if (zoom > 12) {
-        //             weight = 1.0;
-        //         }
-        //         return ({
-        //             fill: true,
-        //             weight: weight,
-        //             color: "#ffffff",
-        //             fillColor: cmap[properties.signature_type],
-        //             fillOpacity: 0.9,
-        //             opacity: 1.0,
-        //         });
-        //     }
-        // }
-
-        // define options of vector tiles
-        // var mapVectorTileOptions = {
-        //     rendererFactory: L.canvas.tile,
-        //     interactive: true, // UPDATE TODO
-        //     attribution: '&copy; <a href="https://martinfleischmann.net">Martin Fleischmann</a>, <a href="https://darribas.org">Dani Arribas-Bel</a>, <a href="https://urbangrammarai.xyz">Urban Grammar AI research project</a>',
-        //     maxNativeZoom: maxZoom,
-        //     minZoom: minZoom,
-        //     vectorTileLayerStyles: vectorTileStyling,
-        // };
-
-        // // create VectorGrid layer and add popup to it
-        // var mapPbfLayer = new L.VectorGrid.Protobuf(
-        //     mapUrl, mapVectorTileOptions
+        // var infraDensLayer = new L.VectorGrid.Protobuf(
+        //     tilesInfraDens, mapVectorTileOptions
         // ).on('click', function (e) {
         //     L.popup()
-        //         .setContent(popup_info[e.layer.properties.signature_type]) // TODO
+        //         .setContent(density_popup_info[e.layer.properties.edge_density_diff])
         //         .setLatLng(e.latlng)
         //         .openOn(map);
         // });
 
-        // // add VectorGrid layer to map
-        // mapPbfLayer.addTo(map);
+        infraLayer.bringToFront();
+        matchedLayer.bringToFront();
+        largestCCLayer.bringToFront();
+        //infraDensLayer.bringToFront();
 
-        // // add transparent  road basemap on top // TODO - add basemap layer
-        // var roads = L.tileLayer(
-        //     'https://api.mapbox.com/styles/v1/martinfleis/ckl6jkuwe3uxa17mrhnp78e62/tiles/256/{z}/{x}/{y}{r}?access_token=pk.eyJ1IjoibWFydGluZmxlaXMiLCJhIjoiY2tydnN4ems4MDl3cDJvcnhjZmZyMng1OSJ9.keLNOQHto3pzzJB1py9BVg', {
-        //     attribution: '',
-        //     opacity: 0.3
-        // }
-        // ).addTo(map);
+        var tileMaps = {
+            "Bicycle infrastructure": infraLayer,
+            "Corresponding infrastructure": matchedLayer,
+            "OSM disconnected components": osmCompLayer,
+            "GeoDK disconnected components": geodkCompLayer,
+            "Largest connected components": largestCCLayer,
+            //"Infrastructure density difference": infraDensLayer
+
+        };
+
+        var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
 
 
         // add scalebar
@@ -465,32 +506,6 @@
         // add locate
         L.control.locate().addTo(map);
     </script>
-
-    <!-- legend TODO -->
-    <!-- <button onclick="toggleLegend()" class="toggle-legend">Legend</button>
-    <div id='maplegend' class='maplegend'>
-        <div class='legend-title'>Content</div>
-        <div class='legend-scale'>
-            <ul class='legend-labels'>
-                <li><span style='background:#d7ded1'></span>Wild countryside</li>
-                <li><span style='background:#f2e6c7'></span>Countryside agriculture</li>
-                <li><span style='background:#c2d0d9'></span>Urban buffer</li>
-                <li><span style='background:#d7a59f'></span>Open sprawl</li>
-                <li><span style='background:#f0d17d'></span>Disconnected suburbia</li>
-                <li><span style='background:#8fa37e'></span>Accessible suburbia</li>
-                <li><span style='background:#c3abaf'></span>Warehouse/Park land</li>
-                <li><span style='background:#e4cbc8'></span>Gridded residential quarters</li>
-                <li><span style='background:#94666e'></span>Connected residential neighbourhoods</li>
-                <li><span style='background:#678ea6'></span>Dense residential neighbourhoods</li>
-                <li><span style='background:#efc758'></span>Dense urban neighbourhoods</li>
-                <li><span style='background:#3b6e8c'></span>Local urbanity</li>
-                <li><span style='background:#ab888e'></span>Regional urbanity</li>
-                <li><span style='background:#bc5b4f'></span>Metropolitan urbanity</li>
-                <li><span style='background:#333432'></span>Concentrated urbanity</li>
-                <li><span style='background:#a7b799'></span>Hyper concentrated urbanity</li>
-            </ul>
-        </div>
-    </div> -->
 
 </body>
 
