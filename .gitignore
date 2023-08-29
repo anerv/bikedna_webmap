@@ -12,8 +12,4 @@ data/osm/*
 data/reference/*
 data/study_area_polygon/*
 results/*
-data/tiles_components/*
-data/tiles_largest_cc/*
-data/tiles_matched/*
-data/tiles_infra_dens/*
 src/__pycache__/*
