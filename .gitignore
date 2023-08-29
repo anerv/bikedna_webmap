@@ -7,6 +7,7 @@ todo.md
 data/compare/*
 data/gpkg/*
 data/osm/*
+data/geojson/*
 data/reference/*
 data/study_area_polygon/*
 results/*
