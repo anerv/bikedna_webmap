@@ -1,12 +1,10 @@
 todo.md
 *.ds_store
 *.gpkg
-*.geojson
 *.parquet
 *.graphml
 
 data/compare/*
-data/geojson/*
 data/gpkg/*
 data/osm/*
 data/reference/*
