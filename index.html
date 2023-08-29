@@ -39,17 +39,27 @@
             padding: 10px;
             font-size: 12px/14px;
             right: 10px;
-            bottom: 20px;
+            bottom: 45px;
+            max-width: 480px;
             display: none;
             font-family: sans-serif;
         }
+
 
         .maplegend .legend-title {
             text-align: left;
             margin-bottom: 10px;
             font-weight: 600;
-            color: #3B6E8D;
+            color: #000000;
             font-size: larger;
+        }
+
+        .maplegend .legend-subtitle {
+            text-align: left;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #000000;
+            font-size: smaller;
         }
 
         .maplegend .legend-scale ul {
@@ -59,6 +69,7 @@
             float: left;
             list-style: none;
         }
+
 
         .maplegend .legend-scale ul li {
             list-style: none;
@@ -77,6 +88,7 @@
             border: 0px solid #ccc;
         }
 
+
         .maplegend .legend-source {
             color: #777;
             clear: both;
@@ -86,6 +98,7 @@
             color: #777;
         }
 
+
         #maptitle {
             position: absolute;
             z-index: 9999;
@@ -94,12 +107,13 @@
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             padding: 20px;
             margin-left: 20px;
-            font-size: 14px;
+            font-size: 16px;
             top: 10px;
             right: 150px;
             max-width: 480px;
-            height: 38%;
+            height: 60%;
             display: none;
+            line-height: 150%;
         }
 
         div.overflow {
@@ -113,17 +127,17 @@
             color: #000000;
         }
 
-        h2 {
-            font-size: 25px;
+        /* h2 {
+            font-size: 22px;
             font-family: sans-serif;
-            color: #3B6E8D;
+            color: #000000;
         }
 
         h3 {
             font-size: 20px;
             font-family: sans-serif;
             color: #BD5B4F;
-        }
+        } */
 
         div.logos {
             height: 100px;
@@ -152,7 +166,7 @@
             top: 10px;
         }
 
-        /* button.toggle-legend {
+        button.toggle-legend {
             position: absolute;
             z-index: 99999;
             background-color: rgba(255, 255, 255, .8);
@@ -160,17 +174,15 @@
             border-radius: 5px;
             border: 0;
             padding: 5px;
-            font-size: 12px;
-            right: 10px;
+            font-size: 16px;
+            right: 14px;
             bottom: 20px;
-        } */
+        }
 
         @media only screen and (min-width: 1920px) {
 
-            button.toggle-title
-
-            /* button.toggle-legend  */
-                {
+            button.toggle-title,
+            button.toggle-legend {
                 padding: 10px;
                 font-size: 18px;
             }
@@ -207,10 +219,15 @@
             </h1>
             This map provides an overview of data on dedicated bicycle infrastructure in Denmark based on two data
             sources: <a href="https://www.openstreetmap.org/">OpenStreetMap (OSM)</a> and <a
-                href="https://www.geodanmark.dk/">GeoDanmark</a>. Included layers are:
+                href="https://www.geodanmark.dk/">GeoDanmark</a>.
+
+            <br>
+
+            Included layers are:
             <ul>
                 <li>All dedicated bicycle infrastructure.</li>
-                <li>An overview of corresponding infrastructure in the two data sources.</li>
+                <li>An overview of corresponding infrastructure in the two data sources, based on feature matching of
+                    OSM and GeoDanmark segments representing the same bicycle infrastructure.</li>
                 <li>Disconnected components.</li>
                 <li>The largest connected components in the OSM and GeoDamark data.</li>
             </ul>
@@ -223,7 +240,8 @@
             <br>
             <br>
 
-            For further details on the map content, see the descriptions in the map legend.
+            For further details on the map content, see the descriptions in the map legend and the explanations in the
+            <a href="http://michael.szell.net/downloads/rahbekviero2023btb.pdf">paper on BikeDNA</a>.
 
             <br>
             <br>
@@ -312,18 +330,22 @@
             "true": "Matched"
         };
 
+
         const cmap = {
             "osm": "#796eb2",
-            "geodk": "#f87d2a",
-            "true": "#FF0000",
-            "false": "#3944BC"
+            "geodk": "#f87d2a"
         };
 
+        const osm_true = "#FF5733";
+        const osm_false = "#6D7BC9";
+        const geodk_true = "#C70039";
+        const geodk_false = "#1D32A9";
+
         function matchedColor(m, s) {
-            if ((m === true) && (s === "osm")) return "#FF5733";
-            if ((m === false) && (s === "osm")) return "#6D7BC9";
-            if ((m === true) && (s === "geodk")) return "#C70039";
-            if ((m === false) && (s === "geodk")) return "#1D32A9";
+            if ((m === true) && (s === "osm")) return osm_true;
+            if ((m === false) && (s === "osm")) return osm_false;
+            if ((m === true) && (s === "geodk")) return geodk_true;
+            if ((m === false) && (s === "geodk")) return geodk_false;
             return "grey";
         };
 
@@ -466,11 +488,6 @@
                 .openOn(map);
         });
 
-
-        // infraLayer.bringToFront();
-        // matchedLayer.bringToFront();
-        // largestCCLayer.bringToFront();
-
         var tileMaps = {
             "Bicycle infrastructure": infraLayer,
             "Corresponding infrastructure": matchedLayer,
@@ -482,13 +499,52 @@
 
         var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
 
-
         // add scalebar
         L.control.scale().addTo(map);
 
         // add locate
         L.control.locate().addTo(map);
     </script>
+
+    <!-- legend -->
+    <button onclick="toggleLegend()" class="toggle-legend">Legend</button>
+    <div id='maplegend' class='maplegend'>
+        <div class='legend-title'>Content</div>
+
+        <div class='legend-scale'>
+            <div class="legend-subtitle">Bicycle Infrastructure</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background:#796eb2'></span>OSM bicycle infrastructure</li>
+                <li><span style='background:#f87d2a'></span>GeoDanmark infrastructure</li>
+            </ul>
+
+
+            <div class="legend-subtitle">Corresponding infrastructure</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background: #FF5733'></span>OSM matched</li>
+                <li><span style='background:#6D7BC9'></span>OSM unmatched</li>
+                <li><span style='background:#C70039'></span>GeoDanmark matched</li>
+                <li><span style='background:#1D32A9'></span>GeoDanmark unmatched</li>
+            </ul>
+
+            <div class="legend-subtitle">Largest connected components</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background: #796eb2'></span>OSM largest component</li>
+                <li><span style='background:#f87d2a'></span>GeoDamark largest component</li>
+            </ul>
+
+            <div class="legend-subtitle">Disconnected components</div>
+            <ul class='legend-labels'>
+                <li>Unique colors for each component</li>
+            </ul>
+
+        </div>
+
+    </div>
+
 
 </body>
 
