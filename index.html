@@ -271,7 +271,7 @@
     <script>
         // defaults
         const minZoom = 6;
-        const maxZoom = 17;
+        const maxZoom = 16;
 
         // get parameters from URL to allow custom location and zoom start
         var params = {};
@@ -388,17 +388,31 @@
 
         // styling
         var vectorTileStyling = {
-            infra: function (properties) {
+            osm_infra: function (properties) {
                 return ({
                     weight: 1.5,
                     color: cmap[properties.source],
                     opacity: 1.0,
                 });
             },
-            matched: function (properties) {
+            geodk_infra: function (properties) {
                 return ({
                     weight: 1.5,
-                    color: matchedColor(properties.matched, properties.source), //cmap[properties.matched],
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            osm_matched: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: matchedColor(properties.matched, "osm"), //cmap[properties.matched],
+                    opacity: 1.0,
+                });
+            },
+            geodk_matched: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: matchedColor(properties.matched, "geodk"), //cmap[properties.matched],
                     opacity: 1.0,
                 });
             },
@@ -436,14 +450,16 @@
         };
 
         // vector tiles URL
-        var tilesInfra = "data/tiles/tiles_infra/{z}/{x}/{y}.pbf";
+        var tilesOSMInfra = "data/tiles/tiles_osm_infra/{z}/{x}/{y}.pbf";
+        var tilesGeodkInfra = "data/tiles/tiles_geodk_infra/{z}/{x}/{y}.pbf";
         var tilesOSMComponents = "data/tiles/tiles_osm_components/{z}/{x}/{y}.pbf";
         var tilesGeodkComponents = "data/tiles/tiles_geodk_components/{z}/{x}/{y}.pbf";
-        var tilesMatched = "data/tiles/tiles_matched/{z}/{x}/{y}.pbf";
+        var tilesOsmMatched = "data/tiles/tiles_osm_matched/{z}/{x}/{y}.pbf";
+        var tilesGeodkMatched = "data/tiles/tiles_geodk_matched/{z}/{x}/{y}.pbf";
         var tilesLargestCC = "data/tiles/tiles_largest_cc/{z}/{x}/{y}.pbf";
 
-        var infraLayer = new L.VectorGrid.Protobuf(
-            tilesInfra, mapVectorTileOptions
+        var geodkInfraLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkInfra, mapVectorTileOptions
         ).on('click', function (e) {
             L.popup()
                 .setContent(popup_info[e.layer.properties.source] + ", " + e.layer.properties.protected)
@@ -451,13 +467,32 @@
                 .openOn(map);
         });
 
-        infraLayer.addTo(map);
-
-        var matchedLayer = new L.VectorGrid.Protobuf(
-            tilesMatched, mapVectorTileOptions
+        var osmInfraLayer = new L.VectorGrid.Protobuf(
+            tilesOSMInfra, mapVectorTileOptions
         ).on('click', function (e) {
             L.popup()
-                .setContent(popup_info[e.layer.properties.source] + ": " + popup_info[e.layer.properties.matched])
+                .setContent(popup_info[e.layer.properties.source] + ", " + e.layer.properties.protected)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        osmInfraLayer.addTo(map);
+        geodkInfraLayer.addTo(map);
+
+        var osmMatchedLayer = new L.VectorGrid.Protobuf(
+            tilesOsmMatched, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("OSM: " + popup_info[e.layer.properties.matched])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var geodkMatchedLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkMatched, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("GeoDanmark: " + popup_info[e.layer.properties.matched])
                 .setLatLng(e.latlng)
                 .openOn(map);
         });
@@ -491,8 +526,10 @@
         });
 
         var tileMaps = {
-            "Bicycle infrastructure": infraLayer,
-            "Corresponding infrastructure": matchedLayer,
+            "OSM bicycle infrastructure": osmInfraLayer,
+            "GeoDK bicycle infrastructure": geodkInfraLayer,
+            "Corresponding infrastructure OSM": osmMatchedLayer,
+            "Corresponding infrastructure GeoDK": geodkMatchedLayer,
             "OSM disconnected components": osmCompLayer,
             "GeoDK disconnected components": geodkCompLayer,
             "Largest connected components": largestCCLayer,
