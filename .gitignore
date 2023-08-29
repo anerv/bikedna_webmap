@@ -12,4 +12,3 @@ data/reference/*
 data/study_area_polygon/*
 results/*
 src/__pycache__/*
-data/tiles/tiles_osm_matched/*
