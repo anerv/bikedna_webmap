@@ -12,4 +12,9 @@ data/reference/*
 data/study_area_polygon/*
 results/*
 src/__pycache__/*
-data/tiles/*
+data/tiles/tiles_geodk_components/*
+data/tiles/titel_osm_components/*
+data/tiles/tiles_largest_cc/*
+data/tiles/tiles_osm_matched/*
+data/tiles/tiles_geodk_matched/*
+data/tiles/tiles_osm_infra/*

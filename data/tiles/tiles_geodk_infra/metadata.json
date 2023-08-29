@@ -1,0 +1,15 @@
+{
+"name": "../data/tiles/tiles_geodk_infra/",
+"description": "../data/tiles/tiles_geodk_infra/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "12.170105,55.787385,16",
+"bounds": "8.116367,54.645998,15.148424,57.734441",
+"antimeridian_adjusted_bounds": "8.116367,54.645998,15.148424,57.734441",
+"type": "overlay",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression '--output-to-directory=../data/tiles/tiles_geodk_infra/' ../data/geojson/geodk_infra.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"geodk_infra\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"protected\":\"String\",\"source\":\"String\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"geodk_infra\",\"count\":50856,\"geometry\":\"LineString\",\"attributeCount\":2,\"attributes\":[{\"attribute\":\"protected\",\"count\":2,\"type\":\"string\",\"values\":[\"protected\",\"unprotected\"]},{\"attribute\":\"source\",\"count\":1,\"type\":\"string\",\"values\":[\"geodk\"]}]}]}}"
+}
