@@ -14,4 +14,3 @@ results/*
 src/__pycache__/*
 data/tiles/tiles_osm_matched/*
 data/tiles/tiles_geodk_matched/*
-data/tiles/tiles_osm_infra/*

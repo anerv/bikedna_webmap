@@ -1,0 +1,16 @@
+{
+"name": "../data/tiles/tiles_osm_infra/",
+"description": "../data/tiles/tiles_osm_infra/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "11.933899,54.776930,16",
+"bounds": "8.084347,54.573739,15.150494,57.738626",
+"antimeridian_adjusted_bounds": "8.084347,54.573739,15.150494,57.738626",
+"type": "overlay",
+"strategies": "[{},{},{},{},{},{},{},{\"detail_reduced\":1,\"tile_size_desired\":550485},{},{},{},{},{},{},{},{},{}]",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression '--output-to-directory=../data/tiles/tiles_osm_infra/' ../data/geojson/osm_infra.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"osm_infra\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"bicycle_bidirectional\":\"Boolean\",\"protected\":\"String\",\"source\":\"String\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"osm_infra\",\"count\":88997,\"geometry\":\"LineString\",\"attributeCount\":3,\"attributes\":[{\"attribute\":\"bicycle_bidirectional\",\"count\":2,\"type\":\"boolean\",\"values\":[false,true]},{\"attribute\":\"protected\",\"count\":3,\"type\":\"string\",\"values\":[\"mixed\",\"protected\",\"unprotected\"]},{\"attribute\":\"source\",\"count\":1,\"type\":\"string\",\"values\":[\"osm\"]}]}]}}"
+}
