@@ -98,7 +98,7 @@
             top: 10px;
             right: 150px;
             max-width: 480px;
-            height: 35%;
+            height: 38%;
             display: none;
         }
 
@@ -148,7 +148,7 @@
             border: 0;
             padding: 5px;
             font-size: 16px;
-            right: 160px;
+            right: 300px;
             top: 10px;
         }
 
@@ -187,14 +187,14 @@
             }
         };
 
-        // function toggleLegend() {
-        //     var x = document.getElementById("maplegend");
-        //     if (x.style.display === "block") {
-        //         x.style.display = "none";
-        //     } else {
-        //         x.style.display = "block";
-        //     }
-        // }
+        function toggleLegend() {
+            var x = document.getElementById("maplegend");
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
     </script>
 
 </head>
@@ -207,15 +207,18 @@
             </h1>
             This map provides an overview of data on dedicated bicycle infrastructure in Denmark based on two data
             sources: <a href="https://www.openstreetmap.org/">OpenStreetMap (OSM)</a> and <a
-                href="https://www.geodanmark.dk/">GeoDanmark</a>. Included layers are all dedicated bicycle
-            infrastructure; an overview of corresponding infrastructure in the two data sources; disconnected
-            components; and the largest connected components in the OSM and GeoDamark data.
-
-            <br>
-            <br>
+                href="https://www.geodanmark.dk/">GeoDanmark</a>. Included layers are:
+            <ul>
+                <li>All dedicated bicycle infrastructure.</li>
+                <li>An overview of corresponding infrastructure in the two data sources.</li>
+                <li>Disconnected components.</li>
+                <li>The largest connected components in the OSM and GeoDamark data.</li>
+            </ul>
 
             The results have been produced using the open source tool for quality assessment of bike infrastructure data
-            <a href="https://github.com/anerv/BikeDNA_BIG">BikeDNA</a>
+            <a href="https://github.com/anerv/BikeDNA_BIG">BikeDNA</a>. See this <a
+                href="https://github.com/anerv/BikeDNA_BIG/blob/main/config.yml">site</a> for exact queries used to
+            extract the OSM data.
 
             <br>
             <br>
