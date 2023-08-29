@@ -23,38 +23,9 @@
     <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.js"
         charset="utf-8"></script>
 
+
     <!-- legend styles -->
     <style type='text/css'>
-        /* Import ET Book styles
-        adapted from https://github.com/edwardtufte/et-book/blob/gh-pages/et-book.css */
-
-        /* @font-face {
-            font-family: "et-book";
-            src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot");
-            src: url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.woff") format("woff"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.ttf") format("truetype"), url("et-book/et-book-roman-line-figures/et-book-roman-line-figures.svg#etbookromanosf") format("svg");
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: "et-book";
-            src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot");
-            src: url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.woff") format("woff"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.ttf") format("truetype"), url("et-book/et-book-display-italic-old-style-figures/et-book-display-italic-old-style-figures.svg#etbookromanosf") format("svg");
-            font-weight: normal;
-            font-style: italic;
-            font-display: swap;
-        }
-
-        @font-face {
-            font-family: "et-book";
-            src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot");
-            src: url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.eot?#iefix") format("embedded-opentype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.woff") format("woff"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.ttf") format("truetype"), url("et-book/et-book-bold-line-figures/et-book-bold-line-figures.svg#etbookromanosf") format("svg");
-            font-weight: bold;
-            font-style: normal;
-            font-display: swap;
-        } */
-
         body {
             font-family: sans-serif;
         }
@@ -70,7 +41,7 @@
             right: 10px;
             bottom: 20px;
             display: none;
-            font-family: 'et-book', serif;
+            font-family: sans-serif;
         }
 
         .maplegend .legend-title {
@@ -138,19 +109,19 @@
 
         h1 {
             font-size: 30px;
-            font-family: 'et-book', serif;
+            font-family: sans-serif;
             color: #3B6E8D;
         }
 
         h2 {
             font-size: 25px;
-            font-family: 'et-book', serif;
+            font-family: sans-serif;
             color: #3B6E8D;
         }
 
         h3 {
             font-size: 20px;
-            font-family: 'et-book', serif;
+            font-family: sans-serif;
             color: #BD5B4F;
         }
 
@@ -234,7 +205,14 @@
         <div class="overflow">
             <h1>Bicycle Infrastructure in Denmark
             </h1>
-            ADD EXPLANATION HERE
+            This map provides an overview of data on dedicated bicycle infrastructure in Denmark based on two data
+            sources: <a href="https://www.openstreetmap.org/">OpenStreetMap (OSM)</a> and <a
+                href="https://www.geodanmark.dk/">GeoDanmark</a>.
+
+
+
+            For further details on the map content, see the descriptions in the map legend.
+
 
             <!-- <div class="logos">
                 <a href="https://www.liverpool.ac.uk/geographic-data-science/"><img
@@ -334,39 +312,40 @@
             return "grey";
         };
 
-        function get_component_count(properties,) {
-            var componentCount;
 
-            for (let i = 0; i < properties.length; i++) {
+        // function get_component_count(array, prop) {
 
-            }
-        };
+        //     var componentCount;
 
+        //     for (let i = 0; i < array.length; i++) {
 
-        function getMax(arr, prop) {
-            var max;
-            for (var i = 0; i < arr.length; i++) {
-                if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
-                    max = arr[i];
-            }
-            return max;
-        };
+        //         thisCompCount = array[i]["properties"][prop];
+        //         if (componentCount == null || parseInt(thisCompCount) > parseInt(componentCount))
+        //             componentCount = thisCompCount;
 
-        function component_cmap(comp_count) {
+        //     }
+        //     return componentCount;
 
-            const dict = [];
+        // };
 
-            for (let i = 0; i < comp_count + 1; i++) {
+        function get_component_cmap(componentCount) {
+
+            const colors = [];
+
+            for (let i = 0; i < componentCount + 1; i++) {
                 const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
-                dict.push({
-                    key: i,
-                    value: randomColor
-                });
+                colors.push(randomColor
+                );
 
             }
+            return colors;
 
         };
 
+        const osmCompCount = 10686;
+        const geodkCompCount = 4408;
+        osmComponentCmap = get_component_cmap(osmCompCount);
+        geodkComponentCmap = get_component_cmap(geodkCompCount);
 
         // styling
         var vectorTileStyling = {
@@ -404,14 +383,14 @@
             osm_components: function (properties) {
                 return ({
                     weight: 1.5,
-                    color: "orange",
+                    color: osmComponentCmap[properties.component],
                     opacity: 1.0,
                 });
             },
             geodk_components: function (properties) {
                 return ({
                     weight: 1.5,
-                    color: "pink",
+                    color: geodkComponentCmap[properties.component],
                     opacity: 1.0,
                 });
             }
@@ -457,11 +436,21 @@
 
         var osmCompLayer = new L.VectorGrid.Protobuf(
             tilesOSMComponents, mapVectorTileOptions
-        );
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Component: " + e.layer.properties.component)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
 
         var geodkCompLayer = new L.VectorGrid.Protobuf(
             tilesGeodkComponents, mapVectorTileOptions
-        );
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Component: " + e.layer.properties.component)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
 
 
         var largestCCLayer = new L.VectorGrid.Protobuf(
