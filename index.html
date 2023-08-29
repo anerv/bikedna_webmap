@@ -385,16 +385,6 @@
                     opacity: 1.0,
                 });
             },
-            // infra_dens: function (properties) {
-            //     return ({
-            //         fill: true,
-            //         fillColor: density_cmap[properties.edge_density_diff],
-            //         fillOpacity: 0.9,
-            //         weight: 1.5,
-            //         color: "#ffffff",
-            //         opacity: 1.0,
-            //     });
-            // },
             osm_components: function (properties) {
                 return ({
                     weight: 1.5,
@@ -427,7 +417,6 @@
         var tilesGeodkComponents = "data/tiles/tiles_geodk_components/{z}/{x}/{y}.pbf";
         var tilesMatched = "data/tiles/tiles_matched/{z}/{x}/{y}.pbf";
         var tilesLargestCC = "data/tiles/tiles_largest_cc/{z}/{x}/{y}.pbf";
-        //var tilesInfraDens = "data/tiles_infra_dens/{z}/{x}/{y}.pbf";
 
         var infraLayer = new L.VectorGrid.Protobuf(
             tilesInfra, mapVectorTileOptions
@@ -477,19 +466,10 @@
                 .openOn(map);
         });
 
-        // var infraDensLayer = new L.VectorGrid.Protobuf(
-        //     tilesInfraDens, mapVectorTileOptions
-        // ).on('click', function (e) {
-        //     L.popup()
-        //         .setContent(density_popup_info[e.layer.properties.edge_density_diff])
-        //         .setLatLng(e.latlng)
-        //         .openOn(map);
-        // });
 
-        infraLayer.bringToFront();
-        matchedLayer.bringToFront();
-        largestCCLayer.bringToFront();
-        //infraDensLayer.bringToFront();
+        // infraLayer.bringToFront();
+        // matchedLayer.bringToFront();
+        // largestCCLayer.bringToFront();
 
         var tileMaps = {
             "Bicycle infrastructure": infraLayer,
@@ -497,7 +477,6 @@
             "OSM disconnected components": osmCompLayer,
             "GeoDK disconnected components": geodkCompLayer,
             "Largest connected components": largestCCLayer,
-            //"Infrastructure density difference": infraDensLayer
 
         };
 
