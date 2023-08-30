@@ -1,6 +1,14 @@
 todo.md
 *.ds_store
+*.gpkg
+*.parquet
+*.graphml
 
-data/*
+data/compare/*
+data/gpkg/*
+data/osm/*
+data/geojson/*
+data/reference/*
+data/study_area_polygon/*
 results/*
 src/__pycache__/*

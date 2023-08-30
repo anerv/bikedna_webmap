@@ -1,0 +1,15 @@
+{
+"name": "../data/tiles/tiles_largest_cc/",
+"description": "../data/tiles/tiles_largest_cc/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "12.499695,55.768849,16",
+"bounds": "11.209750,55.000129,12.679915,56.070763",
+"antimeridian_adjusted_bounds": "11.209750,55.000129,12.679915,56.070763",
+"type": "overlay",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression '--output-to-directory=../data/tiles/tiles_largest_cc/' ../data/geojson/largest_cc.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"largest_cc\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"source\":\"String\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"largest_cc\",\"count\":26241,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"source\",\"count\":2,\"type\":\"string\",\"values\":[\"geodk\",\"osm\"]}]}]}}"
+}

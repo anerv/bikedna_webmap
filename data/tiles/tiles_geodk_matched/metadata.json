@@ -1,0 +1,16 @@
+{
+"name": "../data/tiles/tiles_geodk_matched/",
+"description": "../data/tiles/tiles_geodk_matched/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "12.170105,55.787385,16",
+"bounds": "8.116367,54.645998,15.148424,57.734441",
+"antimeridian_adjusted_bounds": "8.116367,54.645998,15.148424,57.734441",
+"type": "overlay",
+"strategies": "[{},{},{},{},{},{},{\"dropped_as_needed\":385697,\"tile_size_desired\":761909},{\"dropped_as_needed\":666018,\"tile_size_desired\":1331976},{\"dropped_as_needed\":764959,\"tile_size_desired\":2071635},{\"dropped_as_needed\":765845,\"tile_size_desired\":2422991},{\"dropped_as_needed\":736739,\"tile_size_desired\":1983885},{\"dropped_as_needed\":481599,\"tile_size_desired\":869809},{},{},{},{},{}]",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression --drop-densest-as-needed '--output-to-directory=../data/tiles/tiles_geodk_matched/' ../data/geojson/geodk_matched.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"geodk_matched\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"matched\":\"Boolean\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"geodk_matched\",\"count\":880428,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"matched\",\"count\":2,\"type\":\"boolean\",\"values\":[false,true]}]}]}}"
+}

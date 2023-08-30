@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Based on https://martinfleischmann.net/how-to-create-a-vector-based-web-map-hosted-on-github/ -->
+
+<head>
+    <title>Bicycle Infrastructure in Denmark</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- load leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+
+    <!-- load VectorGrid extension -->
+    <script src="https://unpkg.com/leaflet.vectorgrid@1.3.0/dist/Leaflet.VectorGrid.bundled.js"></script>
+
+    <!-- load locate plugin -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.76.1/dist/L.Control.Locate.min.js"
+        charset="utf-8"></script>
+
+
+    <!-- legend styles -->
+    <style type='text/css'>
+        body {
+            font-family: sans-serif;
+        }
+
+        .maplegend {
+            position: absolute;
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, .8);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            font-size: 12px/14px;
+            right: 10px;
+            bottom: 45px;
+            max-width: 480px;
+            display: none;
+            font-family: sans-serif;
+        }
+
+
+        .maplegend .legend-title {
+            text-align: left;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #000000;
+            font-size: larger;
+        }
+
+        .maplegend .legend-subtitle {
+            text-align: left;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #000000;
+            font-size: smaller;
+        }
+
+        .maplegend .legend-scale ul {
+            margin: 0;
+            margin-bottom: 0px;
+            padding: 0;
+            float: left;
+            list-style: none;
+        }
+
+
+        .maplegend .legend-scale ul li {
+            list-style: none;
+            margin-left: 0;
+            line-height: 16px;
+            margin-bottom: 6px;
+        }
+
+        .maplegend ul.legend-labels li span {
+            display: block;
+            float: left;
+            height: 14px;
+            width: 14px;
+            margin-right: 5px;
+            margin-left: 0;
+            border: 0px solid #ccc;
+        }
+
+
+        .maplegend .legend-source {
+            color: #777;
+            clear: both;
+        }
+
+        .maplegend a {
+            color: #777;
+        }
+
+
+        #maptitle {
+            position: absolute;
+            z-index: 9999;
+            background-color: rgba(255, 255, 255, .8);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-left: 20px;
+            font-size: 16px;
+            top: 10px;
+            right: 150px;
+            max-width: 480px;
+            height: 60%;
+            display: none;
+            line-height: 150%;
+        }
+
+        div.overflow {
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-family: sans-serif;
+            color: #000000;
+        }
+
+        /* h2 {
+            font-size: 22px;
+            font-family: sans-serif;
+            color: #000000;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-family: sans-serif;
+            color: #BD5B4F;
+        } */
+
+        div.logos {
+            height: 100px;
+            margin-top: 30px;
+            padding: 0 30px 0 30px;
+        }
+
+        div.logos img {
+            vertical-align: middle;
+        }
+
+        div.logos a {
+            height: 100%;
+        }
+
+        button.toggle-title {
+            position: absolute;
+            z-index: 99999;
+            background-color: rgba(255, 255, 255, .8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            border: 0;
+            padding: 5px;
+            font-size: 16px;
+            right: 300px;
+            top: 10px;
+        }
+
+        button.toggle-legend {
+            position: absolute;
+            z-index: 99999;
+            background-color: rgba(255, 255, 255, .8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            border: 0;
+            padding: 5px;
+            font-size: 16px;
+            right: 14px;
+            bottom: 20px;
+        }
+
+        @media only screen and (min-width: 1920px) {
+
+            button.toggle-title,
+            button.toggle-legend {
+                padding: 10px;
+                font-size: 18px;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleTitle() {
+            var x = document.getElementById("maptitle");
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        };
+
+        function toggleLegend() {
+            var x = document.getElementById("maplegend");
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+    </script>
+
+</head>
+
+<body style='margin:0'>
+    <button onclick="toggleTitle()" class="toggle-title">Details</button>
+    <div id="maptitle">
+        <div class="overflow">
+            <h1>Bicycle Infrastructure in Denmark
+            </h1>
+            This map provides an overview of data on dedicated bicycle infrastructure in Denmark based on two data
+            sources: <a href="https://www.openstreetmap.org/">OpenStreetMap (OSM)</a> and <a
+                href="https://www.geodanmark.dk/">GeoDanmark</a>.
+
+            <br>
+
+            Included layers are:
+            <ul>
+                <li>All dedicated bicycle infrastructure.</li>
+                <li>An overview of corresponding infrastructure in the two data sources, based on feature matching of
+                    OSM and GeoDanmark segments representing the same bicycle infrastructure.</li>
+                <li>Disconnected components.</li>
+                <li>The largest connected components in the OSM and GeoDamark data.</li>
+            </ul>
+
+            The results have been produced using the open source tool for quality assessment of bike infrastructure data
+            <a href="https://github.com/anerv/BikeDNA_BIG">BikeDNA</a>. See this <a
+                href="https://github.com/anerv/BikeDNA_BIG/blob/main/config.yml">site</a> for exact queries used to
+            extract the OSM data.
+
+            <br>
+            <br>
+
+            For further details on the map content, see the descriptions in the map legend and the explanations in the
+            <a href="http://michael.szell.net/downloads/rahbekviero2023btb.pdf">paper on BikeDNA</a>.
+
+            <br>
+            <br>
+
+            The analysis has been funded by the Danish Road Directorate.
+
+            <div class="logos">
+                <a href="https://nerds.itu.dk/"><img src="images/nerdslogo.png" alt="NERDS ITU" width="28%"
+                        style="margin-right: 4%"></a>
+                <a href="https://itu.dk/"><img src="images/itulogo.jpg" alt="GDSL" width="28%"
+                        style="margin-right: 4%"></a>
+                <a href="https://www.vejdirektoratet.dk"><img src="images/vdlogo.svg" alt="The Danish Road Directorate"
+                        width="28%" style="margin-right: 4%"></a>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- div containing map -->
+    <div id="map" style="width: 100vw; height: 100vh; background: #fdfdfd"></div>
+
+    <!-- specification of leaflet map -->
+    <script>
+        // defaults
+        const minZoom = 6;
+        const maxZoom = 16;
+
+        // get parameters from URL to allow custom location and zoom start
+        var params = {};
+        window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+            params[key] = value;
+        });
+
+        // create map
+        var map = L.map('map', {
+            center: [params.lat || 55.843742, params.lng || 10.579834],
+            minZoom: minZoom,
+            maxZoom: maxZoom,
+            zoomControl: true,
+            zoom: params.zoom || 8,
+            tap: false,
+        });
+
+        // Standard OSM basemap
+        var osm = L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }
+        ); //.addTo(map);
+
+        // Cycleosm basemap
+        var cyclosm = L.tileLayer(
+            "https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png",
+            { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }
+        ); //.addTo(map);
+
+        // Positron 
+        var positron = L.tileLayer(
+            "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+            { attribution: '&copy; CartoDB &copy OpenStreetMap' }
+        ).addTo(map);
+
+        // Google satellite
+        googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google',
+            maxZoom: maxZoom,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+            opacity: 0.8,
+        });
+
+
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "Cyclosm": cyclosm,
+            "Positron": positron,
+            "Satellite": googleSat,
+
+        };
+
+        // pop up values 
+        const popup_info = {
+            "osm": "OpenStreetMap",
+            "geodk": "GeoDanmark",
+            "false": "Not matched",
+            "true": "Matched"
+        };
+
+
+        const cmap = {
+            "osm": "#796eb2",
+            "geodk": "#f87d2a"
+        };
+
+        const osm_true = "#FF5733";
+        const osm_false = "#6D7BC9";
+        const geodk_true = "#C70039";
+        const geodk_false = "#1D32A9";
+
+        function matchedColor(m, s) {
+            if ((m === true) && (s === "osm")) return osm_true;
+            if ((m === false) && (s === "osm")) return osm_false;
+            if ((m === true) && (s === "geodk")) return geodk_true;
+            if ((m === false) && (s === "geodk")) return geodk_false;
+            return "grey";
+        };
+
+
+        // function get_component_count(array, prop) {
+
+        //     var componentCount;
+
+        //     for (let i = 0; i < array.length; i++) {
+
+        //         thisCompCount = array[i]["properties"][prop];
+        //         if (componentCount == null || parseInt(thisCompCount) > parseInt(componentCount))
+        //             componentCount = thisCompCount;
+
+        //     }
+        //     return componentCount;
+
+        // };
+
+        function get_component_cmap(componentCount) {
+
+            const colors = [];
+
+            for (let i = 0; i < componentCount + 1; i++) {
+                const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+                colors.push(randomColor
+                );
+
+            }
+            return colors;
+
+        };
+
+        const osmCompCount = 10686;
+        const geodkCompCount = 4408;
+        osmComponentCmap = get_component_cmap(osmCompCount);
+        geodkComponentCmap = get_component_cmap(geodkCompCount);
+
+        // styling
+        var vectorTileStyling = {
+            osm_infra: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            geodk_infra: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            osm_matched: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: matchedColor(properties.matched, "osm"), //cmap[properties.matched],
+                    opacity: 1.0,
+                });
+            },
+            geodk_matched: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: matchedColor(properties.matched, "geodk"), //cmap[properties.matched],
+                    opacity: 1.0,
+                });
+            },
+            largest_cc: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: cmap[properties.source],
+                    opacity: 1.0,
+                });
+            },
+            osm_components: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: osmComponentCmap[properties.component],
+                    opacity: 1.0,
+                });
+            },
+            geodk_components: function (properties) {
+                return ({
+                    weight: 1.5,
+                    color: geodkComponentCmap[properties.component],
+                    opacity: 1.0,
+                });
+            }
+        }
+
+        // define options of vector tiles
+        var mapVectorTileOptions = {
+            rendererFactory: L.canvas.tile,
+            interactive: true,
+            attribution: '(C) GeoDanmark &copy OpenStreetMap',
+            maxNativeZoom: maxZoom,
+            minZoom: minZoom,
+            vectorTileLayerStyles: vectorTileStyling
+        };
+
+        // vector tiles URL
+        var tilesOSMInfra = "data/tiles/tiles_osm_infra/{z}/{x}/{y}.pbf";
+        var tilesGeodkInfra = "data/tiles/tiles_geodk_infra/{z}/{x}/{y}.pbf";
+        var tilesOSMComponents = "data/tiles/tiles_osm_components/{z}/{x}/{y}.pbf";
+        var tilesGeodkComponents = "data/tiles/tiles_geodk_components/{z}/{x}/{y}.pbf";
+        var tilesOsmMatched = "data/tiles/tiles_osm_matched/{z}/{x}/{y}.pbf";
+        var tilesGeodkMatched = "data/tiles/tiles_geodk_matched/{z}/{x}/{y}.pbf";
+        var tilesLargestCC = "data/tiles/tiles_largest_cc/{z}/{x}/{y}.pbf";
+
+        var geodkInfraLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkInfra, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent(popup_info[e.layer.properties.source] + ", " + e.layer.properties.protected)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var osmInfraLayer = new L.VectorGrid.Protobuf(
+            tilesOSMInfra, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent(popup_info[e.layer.properties.source] + ", " + e.layer.properties.protected)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        osmInfraLayer.addTo(map);
+        geodkInfraLayer.addTo(map);
+
+        var osmMatchedLayer = new L.VectorGrid.Protobuf(
+            tilesOsmMatched, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("OSM: " + popup_info[e.layer.properties.matched])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var geodkMatchedLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkMatched, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("GeoDanmark: " + popup_info[e.layer.properties.matched])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var osmCompLayer = new L.VectorGrid.Protobuf(
+            tilesOSMComponents, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Component: " + e.layer.properties.component)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var geodkCompLayer = new L.VectorGrid.Protobuf(
+            tilesGeodkComponents, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Component: " + e.layer.properties.component)
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+
+        var largestCCLayer = new L.VectorGrid.Protobuf(
+            tilesLargestCC, mapVectorTileOptions
+        ).on('click', function (e) {
+            L.popup()
+                .setContent("Largest connected component in " + popup_info[e.layer.properties.source])
+                .setLatLng(e.latlng)
+                .openOn(map);
+        });
+
+        var tileMaps = {
+            "OSM bicycle infrastructure": osmInfraLayer,
+            "GeoDK bicycle infrastructure": geodkInfraLayer,
+            "Corresponding infrastructure OSM": osmMatchedLayer,
+            "Corresponding infrastructure GeoDK": geodkMatchedLayer,
+            "OSM disconnected components": osmCompLayer,
+            "GeoDK disconnected components": geodkCompLayer,
+            "Largest connected components": largestCCLayer,
+
+        };
+
+        var layerControl = L.control.layers(baseMaps, tileMaps).addTo(map);
+
+        // add scalebar
+        L.control.scale().addTo(map);
+
+        // add locate
+        L.control.locate().addTo(map);
+    </script>
+
+    <!-- legend -->
+    <button onclick="toggleLegend()" class="toggle-legend">Legend</button>
+    <div id='maplegend' class='maplegend'>
+        <div class='legend-title'>Content</div>
+
+        <div class='legend-scale'>
+            <div class="legend-subtitle">Bicycle Infrastructure</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background:#796eb2'></span>OSM bicycle infrastructure</li>
+                <li><span style='background:#f87d2a'></span>GeoDanmark infrastructure</li>
+            </ul>
+
+
+            <div class="legend-subtitle">Corresponding infrastructure</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background: #FF5733'></span>OSM matched</li>
+                <li><span style='background:#6D7BC9'></span>OSM unmatched</li>
+                <li><span style='background:#C70039'></span>GeoDanmark matched</li>
+                <li><span style='background:#1D32A9'></span>GeoDanmark unmatched</li>
+            </ul>
+
+            <div class="legend-subtitle">Largest connected components</div>
+
+            <ul class='legend-labels'>
+                <li><span style='background: #796eb2'></span>OSM largest component</li>
+                <li><span style='background:#f87d2a'></span>GeoDamark largest component</li>
+            </ul>
+
+            <div class="legend-subtitle">Disconnected components</div>
+            <ul class='legend-labels'>
+                <li>Unique colors for each component</li>
+            </ul>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>
