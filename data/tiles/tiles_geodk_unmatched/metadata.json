@@ -1,0 +1,16 @@
+{
+"name": "../data/tiles/tiles_geodk_unmatched/",
+"description": "../data/tiles/tiles_geodk_unmatched/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "10.214539,55.293192,16",
+"bounds": "8.120855,54.646083,15.148424,57.734441",
+"antimeridian_adjusted_bounds": "8.120855,54.646083,15.148424,57.734441",
+"type": "overlay",
+"strategies": "[{},{},{},{},{},{},{},{\"dropped_as_needed\":95557,\"tile_size_desired\":620813},{\"dropped_as_needed\":93320,\"tile_size_desired\":619805},{},{},{},{},{},{},{},{}]",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression --drop-densest-as-needed '--output-to-directory=../data/tiles/tiles_geodk_unmatched/' ../data/geojson/geodk_unmatched.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"geodk_unmatched\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"matched\":\"Boolean\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"geodk_unmatched\",\"count\":315767,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"matched\",\"count\":1,\"type\":\"boolean\",\"values\":[false]}]}]}}"
+}

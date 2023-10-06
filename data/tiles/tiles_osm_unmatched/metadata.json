@@ -1,0 +1,16 @@
+{
+"name": "../data/tiles/tiles_osm_unmatched/",
+"description": "../data/tiles/tiles_osm_unmatched/",
+"version": "2",
+"minzoom": "0",
+"maxzoom": "16",
+"center": "12.345886,55.932279,16",
+"bounds": "8.084347,54.573739,15.150494,57.738626",
+"antimeridian_adjusted_bounds": "8.084347,54.573739,15.150494,57.738626",
+"type": "overlay",
+"strategies": "[{},{},{},{},{\"dropped_as_needed\":163175,\"tile_size_desired\":547075},{\"dropped_as_needed\":628988,\"tile_size_desired\":696979},{\"dropped_as_needed\":964570,\"tile_size_desired\":1323145},{\"dropped_as_needed\":1067975,\"tile_size_desired\":2204200},{\"dropped_as_needed\":1085520,\"tile_size_desired\":2506817},{\"dropped_as_needed\":1065657,\"tile_size_desired\":2712709},{\"dropped_as_needed\":925052,\"tile_size_desired\":1607511},{\"dropped_as_needed\":438447,\"tile_size_desired\":689408},{},{},{},{},{}]",
+"format": "pbf",
+"generator": "tippecanoe v2.29.0",
+"generator_options": "tippecanoe -z16 --no-tile-compression --drop-densest-as-needed '--output-to-directory=../data/tiles/tiles_osm_unmatched/' ../data/geojson/osm_unmatched.geojson",
+"json": "{\"vector_layers\":[{\"id\":\"osm_unmatched\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"matched\":\"Boolean\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"osm_unmatched\",\"count\":1198125,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"matched\",\"count\":1,\"type\":\"boolean\",\"values\":[false]}]}]}}"
+}

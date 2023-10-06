@@ -4,13 +4,13 @@
 "version": "2",
 "minzoom": "0",
 "maxzoom": "16",
-"center": "12.345886,55.932279,16",
-"bounds": "8.084347,54.573739,15.150494,57.738626",
-"antimeridian_adjusted_bounds": "8.084347,54.573739,15.150494,57.738626",
+"center": "12.560120,55.703903,16",
+"bounds": "8.116364,54.645917,15.146326,57.730607",
+"antimeridian_adjusted_bounds": "8.116364,54.645917,15.146326,57.730607",
 "type": "overlay",
-"strategies": "[{},{},{},{},{\"dropped_as_needed\":835390,\"tile_size_desired\":717429},{\"dropped_as_needed\":1078005,\"tile_size_desired\":843105},{\"dropped_as_needed\":1362922,\"tile_size_desired\":1585281},{\"dropped_as_needed\":1460235,\"tile_size_desired\":2651702},{\"dropped_as_needed\":1482162,\"tile_size_desired\":3565550},{\"dropped_as_needed\":1462758,\"tile_size_desired\":3340473,\"feature_count_desired\":232038},{\"dropped_as_needed\":1382149,\"tile_size_desired\":2853135},{\"dropped_as_needed\":757757,\"tile_size_desired\":846222},{},{},{},{},{}]",
+"strategies": "[{},{},{},{},{},{},{},{\"dropped_as_needed\":110605,\"tile_size_desired\":584454},{\"dropped_as_needed\":233258,\"tile_size_desired\":1058766},{\"dropped_as_needed\":244194,\"tile_size_desired\":1451795},{\"dropped_as_needed\":232824,\"tile_size_desired\":1245656},{\"dropped_as_needed\":76985,\"tile_size_desired\":555962},{},{},{},{},{}]",
 "format": "pbf",
 "generator": "tippecanoe v2.29.0",
 "generator_options": "tippecanoe -z16 --no-tile-compression --drop-densest-as-needed '--output-to-directory=../data/tiles/tiles_osm_matched/' ../data/geojson/osm_matched.geojson",
-"json": "{\"vector_layers\":[{\"id\":\"osm_matched\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"matched\":\"Boolean\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"osm_matched\",\"count\":1549601,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"matched\",\"count\":2,\"type\":\"boolean\",\"values\":[false,true]}]}]}}"
+"json": "{\"vector_layers\":[{\"id\":\"osm_matched\",\"description\":\"\",\"minzoom\":0,\"maxzoom\":16,\"fields\":{\"matched\":\"Boolean\"}}],\"tilestats\":{\"layerCount\":1,\"layers\":[{\"layer\":\"osm_matched\",\"count\":351476,\"geometry\":\"LineString\",\"attributeCount\":1,\"attributes\":[{\"attribute\":\"matched\",\"count\":1,\"type\":\"boolean\",\"values\":[true]}]}]}}"
 }
